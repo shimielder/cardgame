@@ -22,7 +22,7 @@
 """
 
 from os import system
-from datetime import datetime
+from datetime import datetime #для формирования отчета об ошибках
 
 import card
 
@@ -105,6 +105,7 @@ Type Next to next deal. Type Quit to exit game\n')
     def is_win(self):
         """Функция проверки условия победы"""
         self.count_possibles()
+
         def play_again(self):
             for i in range(len(self.on_table)):
                 self.on_table.extend(self.on_table[0])
@@ -172,3 +173,7 @@ def game():
     while sol.win != True:
         sol.next_turn()
         sol.is_win()
+
+if __name__ == '__main__':
+    game()
+

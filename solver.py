@@ -1,4 +1,3 @@
-
 from os import remove, rename
 from datetime import datetime
 
@@ -111,8 +110,8 @@ class Resolver(solitaire.UnknownSolitaire):
         return self.win
 
 
-def solver(runs=99):
-    """Функция, запускающая тестовый класс"""
+if __name__ == '__main__':
+    runs = 99
     for i in range(runs):
         print('Run:', i)
         new_game = Resolver()

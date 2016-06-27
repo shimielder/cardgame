@@ -1,9 +1,9 @@
-"""Это модуль колоды.
+"""Это класс колоды.
 На основе заданного значения создает колоду.
 Имеет методы, позволяющие перемешать колоду,
 раздать любое количество карт,
 показать текущую перемешанную колоду,
-показать карты на столе/в руке.
+показать розданные карты.
 """
 from random import randint
 import sys
@@ -37,6 +37,8 @@ class CardDeck:
             print('Size should be 52 or 36!')
             sys.exit()
 
+    def __str__(self):
+        return str(self.deck)
 
     def display_deck(self):
         """Выводит в консоль сформированную колоду"""
@@ -46,19 +48,22 @@ class CardDeck:
     def shuffle_deck(self):
         """Перемешивает колоду в случайном порядке.
         Краткое описание алгоритма:
-        Исходная колода представлена в виде списока.
+        Исходная колода представлена в виде списка.
         Все манипуляции производятся над копией колоды.
-        Берется последний элемент (n) и меняется местами с рандомным элементом в диапазоне (0,n).
+        Берется последний элемент (n) и меняется местами
+        с рандомным элементом в диапазоне (0,n).
         Затем n уменьшается на один и так далее.
         """
         self.shuffled_deck = self.deck[:]
         length = len(self.shuffled_deck)
         while length != 0:
             rand_number = randint(0, length-1)
-            self.shuffled_deck[length-1], self.shuffled_deck[rand_number] = self.shuffled_deck[rand_number], \
-                                                        self.shuffled_deck[length - 1]
+            self.shuffled_deck[length-1], self.shuffled_deck[rand_number] = \
+            self.shuffled_deck[rand_number], self.shuffled_deck[length-1]       #меняем местами последний и рандомный элемент a,b = b,a
             length -= 1
-        self.shuffled_deck_copy = self.shuffled_deck[:]
+
+#        self.shuffled_deck_copy = self.shuffled_deck[:] сохранение перемешанной колоды
+
 
 
     def show_shuffled(self):
@@ -67,7 +72,7 @@ class CardDeck:
             for item in self.shuffled_deck:
                 print(item)
         except AttributeError:
-            print('Deck isn\'t shuffled yet') #Если колоды нет, выдает ошибку
+            print('Deck isn\'t shuffled yet') #Если перемешанной колоды нет, выдает ошибку
 
     def show_on_table(self):
         """Отображает карты, выложенные на стол"""
@@ -80,7 +85,8 @@ class CardDeck:
         По умолчанию, одна карта, но при вызове можно указать любое количество
         """
         while deal != 0:
-            self.on_table.append([self.shuffled_deck[len(self.shuffled_deck) - 1]])
+            last_card = self.shuffled_deck[len(self.shuffled_deck) - 1]
+            self.on_table.append([last_card])
             self.shuffled_deck.pop()
             deal -= 1
-        return self.on_table[len(self.on_table)-1]
+
