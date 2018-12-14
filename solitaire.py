@@ -22,19 +22,26 @@
 """
 
 from os import system
-from datetime import datetime #для формирования отчета об ошибках
+from datetime import datetime  # для формирования отчета об ошибках
 
 import card
+
 
 class UnknownSolitaire(card.CardDeck):
     """Класс, наследующий колоду, содержит логику игры"""
     win = False
+    moves = 0
+    card_to_move = None
+
+    def __init__(self, set_size=52):
+        super().__init__(set_size)
+        self.tries = 3
+        self.card = None
 
     def start_game(self):
         """Начало игры, по правилам имеется 3 попытки,
         карты мешаются и сразу раздается 3 карты
         """
-        self.tries = 3
         self.shuffle_deck()
         self.card_deal(3)
 
@@ -42,7 +49,7 @@ class UnknownSolitaire(card.CardDeck):
         """Очищает экран от старых записей и выводит колоду"""
         try:
             system('clear')
-        except:
+        except Exception:
             system('cls')
         self.show_on_table()
 
@@ -60,7 +67,7 @@ Type Next to next deal. Type Quit to exit game\n')
                         self.card = self.on_table.index(item) - 1
                         break
                 elif self.card.isdigit():
-                    if self.on_table[int(self.card)-1][0] in self.card_to_move:
+                    if self.on_table[int(self.card) - 1][0] in self.card_to_move:
                         self.card = int(self.card) - 2
                         break
                 else:
@@ -68,6 +75,7 @@ Type Next to next deal. Type Quit to exit game\n')
             return self.card
 
         try:
+            self.card = str(self.card)
             if not self.card.isdigit() and (self.card.lower() == 'next' or
                                             self.card.lower() == 'n'):
                 self.is_win()
@@ -92,32 +100,32 @@ Type Next to next deal. Type Quit to exit game\n')
         except Exception as err:
             self.clear_screen()
             print('Incorrect input: ', err)
-            errors = open('errors from solitaire.txt', 'a')    #Логирование перехваченных ошибок
+            errors = open('errors from solitaire.txt', 'a')  # Логирование перехваченных ошибок
 
             errors.write('{0} Error: {1} Try: {2} Card: {3} \
-            In hand: {4} Cards to remove: {5} Moves: {6}\n\n'\
-            .format(datetime.now(), err, self.tries, self.card,\
-            self.on_table, self.card_to_move, self.moves))
+            In hand: {4} Cards to remove: {5} Moves: {6}\n\n' \
+                         .format(datetime.now(), err, self.tries, self.card, \
+                                 self.on_table, self.card_to_move, self.moves))
 
-            errors.close
+            errors.close()
         return self.card
 
     def is_win(self):
         """Функция проверки условия победы"""
         self.count_possibles()
 
-        def play_again(self):
-            for i in range(len(self.on_table)):
-                self.on_table.extend(self.on_table[0])
-                self.on_table.pop(self.on_table.index(self.on_table[0]))
-            self.shuffled_deck = list(reversed(self.on_table[:]))
-            self.on_table = []
-            return self.shuffled_deck
+        def play_again(instance):
+            for i in range(len(instance.on_table)):
+                instance.on_table.extend(instance.on_table[0])
+                instance.on_table.pop(instance.on_table.index(instance.on_table[0]))
+            instance.shuffled_deck = list(reversed(instance.on_table[:]))
+            instance.on_table = []
+            return instance.shuffled_deck
 
         if self.tries != 0:
             if len(self.on_table) == 2 and len(self.shuffled_deck) == 0:
                 print('You won!')
-                result = open('win_deck.txt', 'a')             #Запись в файл выигрышной комбинации
+                result = open('win_deck.txt', 'a')  # Запись в файл выигрышной комбинации
                 result.write('is_win method {} \
                 \n'.format(', '.join(self.shuffled_deck_copy)))
                 result.close()
@@ -148,11 +156,11 @@ Type Next to next deal. Type Quit to exit game\n')
         self.card_to_move = []
         for i in range(len(self.on_table) - 2):
             if (self.on_table[i][0].split(' ')[0]
-                in self.on_table[i + 2][0].split(' ')):
+                    in self.on_table[i + 2][0].split(' ')):
                 self.moves += 1
                 self.card_to_move.append(self.on_table[i + 1][0])
             elif (self.on_table[i][0].split(' ')[1]
-                in self.on_table[i + 2][0].split(' ')):
+                  in self.on_table[i + 2][0].split(' ')):
                 self.moves += 1
                 self.card_to_move.append(self.on_table[i + 1][0])
         return self.moves
@@ -170,10 +178,10 @@ def game():
     sol = UnknownSolitaire()
     sol.start_game()
     sol.show_on_table()
-    while sol.win != True:
+    while not sol.win:
         sol.next_turn()
         sol.is_win()
 
+
 if __name__ == '__main__':
     game()
-
